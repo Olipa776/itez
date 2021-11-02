@@ -8,25 +8,25 @@ class Province(models.Model):
     """
     name = models.CharField(
         _("Province"),
-        max_length=255 
+        max_length=255
     )
 
     created = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = 'Province'
         verbose_name_plural = 'Provinces'
         ordering = ['-created']
-    
+
 
 class District(models.Model):
     """
     Define district properties and corresponding methods.
     """
-    
+
     name = models.CharField(
         _('District'),
         max_length=255
@@ -41,3 +41,19 @@ class District(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ServiceArea(models.Model):
+    """
+    Add name instance and corresponding method.
+    """
+    name = models.CharField(
+        _("District"),
+        max_length=250
+    )
+
+    district_id =  models.ForeignKey(
+        District,
+        on_delete=PROTECT,
+    )
+
