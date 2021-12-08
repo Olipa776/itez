@@ -7,6 +7,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.bootstrap import TabHolder, Tab
 
 from itez.beneficiary.models import Beneficiary, MedicalRecord
+from itez.beneficiary.models import AgentDetail
 
 
 class MedicalRecordForm(ModelForm):
@@ -58,6 +59,46 @@ class MedicalRecordForm(ModelForm):
         self.save_m2m()
         return instance
 
+# USER_ROLES = [
+#     ('MR', 'Mr.'),
+# ]
+class AgentForm(ModelForm):
+    class Meta:
+
+        model = AgentDetail
+        exclude = ["created", "agent_id"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(
+                "Personal Information",
+                Row(
+                    Column("first_name", css_class="form-group col-md-6 mb-0"),
+                    Column("last_name", css_class="form-group col-md-6 mb-0"),
+                    Column("gender", css_class="form-group col-md-6 mb-0"),
+                    Column("birthdate", css_class="form-group col-md-6 mb-0"),
+                    Column("location", css_class="form-group col-md-6 mb-0 mt-7"),
+                    
+
+                    css_class="form-row",
+                ),
+            ),
+           
+            FormActions(
+                Submit("save", "Create Agent"),
+                HTML('<a class="btn btn-danger" href="agent/create">Cancel</a>'),
+            ),
+        )
+
+    def save(self, commit=True):
+        instance = super(AgentForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        # self.save_m2m()  # we  can use this if we have many to many field on the model i.e Service
+        return instance
 
 class BeneficiaryForm(ModelForm):
     class Meta:

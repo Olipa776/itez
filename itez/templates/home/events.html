@@ -109,12 +109,17 @@
                                   <td>
                                     <h6>{{user.profile.gender}}</h6>
                                   </td>
-                                  <td>Database Admin</td>
+                                  <td>
+                                    <!-- <h6>{{user.groups.all}}</h6> -->
+                                  </td>
                                   {%if user.is_active %}
-                                  <td><div class="badge badge-opacity-warning"></div>Active</td>
+                                  <td>
+                                    <h6>{{user.status}}
+                                    <div class="badge badge-opacity-warning"></div>Active</td>
                                   {%else %}
                                   <td><div class="badge badge-opacity-warning"></div>Inactive</td>
                                   {%endif%}
+                                  </h6>
                                  <td>
                                     <h6>{{user.last_login}}</h6>
                                   </td>

@@ -15,12 +15,16 @@ from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from rolepermissions.roles import RolesManager
 
 from itez.beneficiary.models import Beneficiary, BeneficiaryParent, MedicalRecord
 from itez.beneficiary.models import Service
 
-from itez.beneficiary.forms import BeneficiaryForm, MedicalRecordForm
+from itez.beneficiary.forms import BeneficiaryForm, MedicalRecordForm, AgentForm
+from itez.beneficiary.models import AgentDetail
 from itez.users.models import User, Profile
+from itez.users.models import Profile as agent_profile_model
+
 from itez.beneficiary.models import Drug, Prescription, Lab, District, Province
 
 
@@ -58,7 +62,7 @@ def index(request):
 @login_required(login_url="/login/")
 def uielements(request):
     context = {"title": "UI Elements"}
-    html_template = loader.get_template("home/basic-table.html")
+    html_template = loader.get_template("home/basic_elements.html")
     return HttpResponse(html_template.render(context, request))
 
 
@@ -111,6 +115,7 @@ class MedicalRecordCreateView(LoginRequiredMixin, CreateView):
         return super(MedicalRecordCreateView, self).form_valid(form)
 
 
+    
 class BeneficiaryCreateView(LoginRequiredMixin, CreateView):
     """
     Create a new Beneficiary object.
@@ -159,7 +164,70 @@ class BenenficiaryListView(LoginRequiredMixin, ListView):
         context["title"] = "Beneficiaries"
         return context
 
+class AgentCreateView(LoginRequiredMixin, CreateView):
+    """
+      Create an agent object.
+    """
 
+    model = AgentDetail
+    form_class = AgentForm
+    template_name = "agent/agent_create.html"
+   
+
+    def get_queryset(self):
+        return Beneficiary.objects.filter(alive=True)
+    
+    def get_success_url(self):
+        return reverse("beneficiary:agent_list")
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(AgentCreateView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentCreateView, self).get_context_data(**kwargs)
+        roles = RolesManager.get_roles_names()
+
+        context["title"] = "create agent"
+        context["roles"] = roles
+        
+        return context
+
+
+class AgentListView(LoginRequiredMixin, ListView):
+    """
+    List all agents.
+    """
+
+    model = AgentDetail
+    context_object_name = "agents"
+    template_name = "agent/agent_list.html"
+    paginate_by = 10
+    
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentListView, self).get_context_data(**kwargs)
+        context["title"] = "list all agents"
+        
+        return context
+    
+ 
+class AgentDetailView(LoginRequiredMixin, DetailView):
+    """
+    Agent Details view.
+    """
+
+    context_object_name = "agent"
+    model = AgentDetail
+    template_name = "agent/agent_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentDetailView, self).get_context_data(**kwargs)
+        context["title"] = "Agent Details"
+
+        return context
+
+   
 class BeneficiaryDetailView(LoginRequiredMixin, DetailView):
     """
     Beneficiary Details view.

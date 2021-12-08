@@ -35,8 +35,8 @@ user_detail_view = UserDetailView.as_view()
 def user_profile(request):
     user_profile = Profile.objects.get(id=request.user.id)
     current_user = user_model.objects.get(id=request.user.id)
-    user_district = District.objects.get(id=request.user.id)
-    user_province = Province.objects.get(id=request.user.id)
+    # user_district = District.objects.get(id=request.user.id)
+    # user_province = Province.objects.get(id=request.user.id)
     if request.method == "POST":
         phone_no_1 = request.POST.get("phone-no-1", user_profile.phone_number)
         phone_no_2 = request.POST.get("phone-no-2", user_profile.phone_number_2)
@@ -88,7 +88,7 @@ def user_profile(request):
     gender_array = [gender[1] for gender in GENDER_CHOICES]
     
     context = {
-        "province": user_province,
+        # "province": user_province,
         "user": user_profile,
         "education_levels": education_levels,
         "gender_array": gender_array,
